@@ -4,7 +4,7 @@ from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 
 from registration.managers import RegistrationManager
-from registration.user import User
+from django.conf import settings
 
 
 class RegistrationProfile(models.Model):
@@ -22,7 +22,7 @@ class RegistrationProfile(models.Model):
     registration and activation.
     """
 
-    user = models.OneToOneField(User, related_name='registration_profile',
+    user = models.OneToOneField(getattr(settings, 'AUTH_USER_MODEL', 'django.contrib.auth.models.User'), related_name='registration_profile',
         verbose_name=_('user'))
 
     activation_key = models.CharField(_('activation key'), max_length=40)
@@ -39,7 +39,7 @@ class RegistrationProfile(models.Model):
     moderated = models.BooleanField(_('moderated'), default=False)
 
     # denotes the user has been moderated
-    moderator = models.ForeignKey(User, related_name='moderated_profiles',
+    moderator = models.ForeignKey(getattr(settings, 'AUTH_USER_MODEL', 'django.contrib.auth.models.User'), related_name='moderated_profiles',
         null=True, verbose_name=_('moderator'))
 
     # the time the user was moderated
@@ -59,7 +59,7 @@ class RegistrationProfile(models.Model):
             self.moderation_time = datetime.now()
         super(RegistrationProfile, self).save(*args, **kwargs)
 
-    @transaction.commit_on_success
+    @transaction.atomic()
     def activate(self):
         user = self.user
         user.is_active = True
