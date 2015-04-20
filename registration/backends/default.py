@@ -115,7 +115,7 @@ class Backend(object):
         "Returns verified, non-activated profiles."
         return self.get_profiles(request, verified=True, activated=False)
 
-    @transaction.commit_on_success
+    @transaction.atomic()
     def register(self, request, form, **kwargs):
         "Post-form validation registration logic."
         if Site._meta.installed:
@@ -135,7 +135,7 @@ class Backend(object):
 
         return user
 
-    @transaction.commit_on_success
+    @transaction.atomic()
     def verify(self, request, profile, **kwargs):
         """Given an activation key, mark the account as being verified for
         moderation. Send an email to all account moderators on the first
@@ -171,7 +171,7 @@ class Backend(object):
             signals.user_activated.send(sender=self.__class__, user=profile.user,
                 request=request, backend=self)
 
-    @transaction.commit_on_success
+    @transaction.atomic()
     def moderate(self, request, form, profile, **kwargs):
         if not profile.moderated:
             profile.moderated = True
