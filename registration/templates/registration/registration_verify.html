@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% if verified %}
-        {% if moderated %}
+    {% if profile.verified %}
+        {% if moderation_required %}
             Your account has been verified. Account moderators have been notified
             and will begin reviewing your account request.
         {% else %}
