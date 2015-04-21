@@ -51,6 +51,7 @@ def verify(request, backend='default', template_name='registration/registration_
     })
 
 @never_cache
+@permission_required('registration.change_registrationprofile')
 def moderate(request, backend='default', template_name='registration/registration_moderate.html', **kwargs):
     backend = get_backend(backend)
     profile = backend.get_profile(request, **kwargs)
